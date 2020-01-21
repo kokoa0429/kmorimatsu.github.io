@@ -25,6 +25,11 @@ if (get.debug && typeof debugDisplay !="undefined") {
 }
 if (get.speed) {
 	if (100000<=get.speed && get.speed<=20000000) speed=maxspeed=get.speed;
+	z80.setSpeed(speed);
+	dom.showSpeed(speed);
+}
+if (get.break) {
+	z80.breakPoint=parseInt(get.break,16);
 }
 // Following function will be called by initializing display.
 start=function(){
@@ -34,6 +39,7 @@ start=function(){
 			var from=time;
 			var to=time=new Date().getTime();
 			var msec=to-from;
+			io.timer(time);
 			if (msec<50 && speed<maxspeed) {
 				speed<<=1;
 				 if (15625<speed && speed<31250) speed=15625;

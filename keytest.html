@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<!--
+/************************************
+* MachiKania web written by Katsumi *
+*      This script is released      *
+*        under the LGPL v2.1.       *
+************************************/
+-->
+<head>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="./style.css" />
+	<!-- Load javascript fies -->
+	<script type="text/javascript">
+		window.onkeydown=function(e){
+			var str='';
+			var add=function(p1){
+				str+=p1+": "
+				str+=e.getModifierState(p1);
+				str+="<br />\n";
+			};
+			str+="Code: 0x"+e.keyCode.toString(16);
+			str+="<br />";
+			add("Alt");
+			add("AltGraph");
+			add("CapsLock");
+			add("Control");
+			add("Fn");
+			add("FnLock");
+			add("Meta");
+			add("NumLock");
+			add("ScrollLock");
+			add("Shift");
+			add("Symbol");
+			add("SymbolLock");
+			add("Eisu");
+			add("Hankaku");
+			add("Hiragana");
+			add("HiraganaKatakana");
+			add("KanaMode");
+			add("KanjiMode");
+			add("Katakana");
+			add("Romaji");
+			add("Zenkaku");
+			add("ZenkakuHankaku");
+			document.getElementById("result").innerHTML=str;
+			return false;
+		};
+		window.onkeyup=window.onkeydown;
+	</script>
+	<title>Keyboard test</title>
+</head>
+<body>
+	<div id="result">Please push a key</div>
+</body>
+</html>

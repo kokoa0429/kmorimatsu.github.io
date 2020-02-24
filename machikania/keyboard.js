@@ -43,8 +43,13 @@ keyboard.keyup=function(code){
 	}
 };
 keyboard.convertCode=function(code){
-	if (this.shiftkey) return this.vk2asc2_en[code];
-	else return this.vk2asc1_en[code];
+	if (get.jp) {
+		if (this.shiftkey) return this.vk2asc2_jp[code];
+		else return this.vk2asc1_jp[code];
+	} else {
+		if (this.shiftkey) return this.vk2asc2_en[code];
+		else return this.vk2asc1_en[code];
+	}
 };
 keyboard.init=function(){
 	var i;

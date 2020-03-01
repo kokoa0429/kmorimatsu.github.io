@@ -2,8 +2,6 @@
 <html lang="ja">
 <head>
 	<meta charset="UTF-8" />
-	<link rel="stylesheet" type="text/css" href="./style.css" />
-	<!-- Load javascript fies -->
 	<script type="text/javascript">
 		window.onkeydown=function(e){
 			var str='';
@@ -12,8 +10,24 @@
 				str+=e.getModifierState(p1);
 				str+="<br />\n";
 			};
-			str+="Code: 0x"+e.keyCode.toString(16);
+			var add2=function(p1){
+				str+=p1+": "
+				str+=e[p1];
+				str+="<br />\n";
+			};
+			str+='"'+e.key+'"<br />';
+			str+="Code: 0x"+e.keyCode.toString(16)+"<br />";
 			str+="<br />";
+			add2("ctrlKey");
+			add2("isComposing");
+			add2("key");
+			add2("locale");
+			add2("location");
+			add2("metaKey");
+			add2("repeat");
+			add2("shiftKey");
+			str+="<br />";
+			add("OS");
 			add("Alt");
 			add("AltGraph");
 			add("CapsLock");

@@ -305,10 +305,10 @@ filesystem.FindFirst=function(fileName,attr,rec){
 		c=fileName.charAt(i);
 		switch(c){
 			case '?':
-				re+='[A-Z_]';
+				re+='[^\\."\\\\/\\[\\]\\:;\\s]';
 				break;
 			case '*':
-				re+='[A-Z_]*';
+				re+='[^\\."\\\\/\\[\\]\\:;\\s]*';
 				break;
 			case '.':
 				re+='\\.';

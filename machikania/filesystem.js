@@ -84,15 +84,13 @@ filesystem.root=new Array();
 filesystem.root["LIB"]=new Array();
 filesystem.root["LIB"]["TEST"]="#TEST\n";
 filesystem.root["MACHIKAM.INI"]="#\n#\n";
-filesystem.root["TEST.BAS"]=(function(){/*
-useclass TEST
-o=new(TEST)
-o.HELLO()
-
-option classcode
-method HELLO
- print "Hello World!"
-return
+filesystem.root["TEST.BAS"]=(function(){/*cls
+a#=3.14
+print hex$(a)
+*/}).toString().match(/\/\*([\s\S]*)\*\//)[1];
+filesystem.root["TEST2.BAS"]=(function(){/*cls
+a=0x4048f5c3
+print a#
 */}).toString().match(/\/\*([\s\S]*)\*\//)[1];
 filesystem.curdir=filesystem.root;
 filesystem.curdirpath='\\';
@@ -269,11 +267,11 @@ filesystem.FSfwrite=function(data_to_write,size,n,stream){
 		if (size<seek+n) size=seek+n;
 		fsfile.size.set(stream,size);
 		// Update string in HTML5
-		var result=str.substr(0,seek);
+		var result=str.substring(0,seek);
 		for(var i=0;i<n;i++){
-			result+=String.fromCharCode(system.read8(data_to_write+seek+i));
+			result+=String.fromCharCode(system.read8(data_to_write+i));
 		}
-		result+=str.substr(seek+n);
+		result+=str.substring(seek+n);
 		dir[file]=result;
 		return n;
 	} else {

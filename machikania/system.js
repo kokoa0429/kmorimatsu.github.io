@@ -39,6 +39,7 @@ system.CONFIG=new Array();
 system.pTVRAM=0;
 system.pFontData=0;
 system.pFontData2=0;
+system.pFontp=0;
 system.pHtml5data=0;
 system.pPs2keystatus=0;
 system.pVkey=0;
@@ -112,7 +113,8 @@ system.html5functions=function(address,type){
 	#define HTML5FUNC_set_videomode "258"
 */
 	if (address!=mips32.pc) return;
-	var v0;
+	if (get.debug==='hex') return;
+	var v0=mips32.GPR(2);
 	var v1=mips32.GPR(3);
 	var ra=mips32.GPR(31);
 	var a0=parseInt(mips32.GPR(4));
@@ -180,15 +182,13 @@ system.html5functions=function(address,type){
 			break;
 		case 256: // set_palette
 			// TODO: implement here
-			//alert('set_palette');
+			display.set_palette(a0,a1,a2,a3);
 			break;
 		case 257: // set_bgcolor
-			// TODO: implement here
-			//alert('set_bgcolor');
+			display.set_bgcolor(a0,a1,a2)
 			break;
 		case 258: // set_videomode
-			// TODO: implement here
-			v0=display.set_videomode(a0,a1);
+			display.set_videomode(a0,a1);
 			break;
 		default:
 			this.exception("Wrong HTML5 request: "+type);
@@ -204,14 +204,14 @@ system.html5functions=function(address,type){
 system.unsigned32=function(num){
 	return (num<0) ? (num+0x100000000):num;
 };
-system.read32=function(address){
+system.read32=function(address,nonexec){
 	address=parseInt(address);
 	if (address<0) address+=0x100000000;
 	if ((address&3)!=0) {
 		this.exception("Address Error (read32)");
 	}
 	if (PROGRAM_FLASH_BASE_ADDRESS<=address && address<=PROGRAM_FLASH_END_ADDRESS) {
-		if (0x9D006080==address) this.html5functions(address,mips32.GPR(2));
+		if (0x9D006080==address && nonexec === undefined) this.html5functions(address,mips32.GPR(2));
 		return this.unsigned32(this.FLASH[(address-PROGRAM_FLASH_BASE_ADDRESS)>>2]);
 	}
 	if (RAM_BASE_ADDRESS<=address && address<=RAM_END_ADDRESS) {
@@ -321,6 +321,22 @@ system.write16=function(address,data){
 	}
 	this.write32(address&0xFFFFFFFC,data);
 };
+system.readRAM8=function(address){
+	address=parseInt(address)&0xffffff;
+	var data=this.unsigned32(this.RAM[address>>2]);
+	switch(address&3){
+		// Little endian
+		case 0:
+			return data&0xff
+		case 1:
+			return (data>>8)&0xff
+		case 2:
+			return (data>>16)&0xff
+		case 3:
+		default:
+			return (data>>24)&0xff
+	}
+};
 system.log=function(text){
 	text+=" at PC:0x"+(mips32.pc-4).toString(16);
 	try{
@@ -348,11 +364,12 @@ system.init=function(){
 	this.pTVRAM        = this.read32(0x9d006000);
 	this.pFontData     = this.read32(0x9d006004);
 	this.pFontData2    = this.read32(0x9d006008);
-	this.pHtml5data    = this.read32(0x9d00600C);
-	this.pPs2keystatus = this.read32(0x9d006010); // volatile unsigned char ps2keystatus[256];
-	this.pVkey         = this.read32(0x9d006014); // volatile unsigned short vkey;
-	this.pGFileArray0  = this.read32(0x9d006018); // FSFILE gFileArray[]
-	this.pGFileArray1  = this.read32(0x9d00601C); // FSFILE gFileArray[]
+	this.pFontp        = this.read32(0x9d00600C);
+	this.pHtml5data    = this.read32(0x9d006010);
+	this.pPs2keystatus = this.read32(0x9d006014); // volatile unsigned char ps2keystatus[256];
+	this.pVkey         = this.read32(0x9d006018); // volatile unsigned short vkey;
+	this.pGFileArray0  = this.read32(0x9d00601C); // FSFILE gFileArray[]
+	this.pGFileArray1  = this.read32(0x9d006020); // FSFILE gFileArray[]
 	// Initialize timers
 	this.initTimer(timer1,1,'IFS0<4>');
 	this.initTimer(timer2,2,'IFS0<9>');

@@ -85,23 +85,7 @@ filesystem.root["LIB"]=new Array();
 filesystem.root["LIB"]["TEST"]="#TEST\n";
 filesystem.root["MACHIKAM.INI"]="#\n#\n";
 filesystem.root["TEST.BAS"]=(function(){/*cls
-usegraphic 5
-cursor 19,12
-print "Hello World!"
-circlefill 200,100,50,1
-a$=input$()
-*/}).toString().match(/\/\*([\s\S]*)\*\//)[1];
-filesystem.root["TEST2.BAS"]=(function(){/*cls
-usegraphic 9
-cursor 32,12
-print "Hello World!"
-circlefill 300,100,50,1
-a$=input$()
-*/}).toString().match(/\/\*([\s\S]*)\*\//)[1];
-filesystem.root["TEST3.BAS"]=(function(){/*cls
-for i=1 to 1000
-print i;
-next
+print (3.76379>4),(4>5),(4>3)
 */}).toString().match(/\/\*([\s\S]*)\*\//)[1];
 filesystem.curdir=filesystem.root;
 filesystem.curdirpath='\\';
@@ -267,7 +251,7 @@ filesystem.FSfwrite=function(data_to_write,size,n,stream){
 	var dir=this.getDir(stream);
 	var file=this.getFile(stream);
 	if (!dir) return 0;
-	if (typeof dir[file]!='string') return 0;
+	if (Array.isArray(dir[file])) return 0;
 	var str=dir[file];
 	if (fsfile.flags(stream) & 0x01) {
 		// Prepare PIC32 conditions
@@ -334,9 +318,9 @@ filesystem.FindFirst=function(fileName,attr,rec){
 	for(var file in this.curdir){
 		if (!re.exec(file)) continue;
 		if (attr & 0x10) {
-			if (typeof this.curdir[file]=='object') this.FindFirst.data.push(file);
+			if (Array.isArray(this.curdir[file])) this.FindFirst.data.push(file);
 		} else {
-			if (typeof this.curdir[file]=='string') this.FindFirst.data.push(file);
+			if (!Array.isArray(this.curdir[file])) this.FindFirst.data.push(file);
 		}
 	}
 	if (attr & 0x10) {
@@ -349,10 +333,10 @@ filesystem.FindFirst=function(fileName,attr,rec){
 };
 filesystem.FindNext=function(rec){
 //int FindNext (SearchRec * rec);
-	if (typeof this.FindFirst.data !='object') return -1;
+	if (!Array.isArray(this.FindFirst.data)) return -1;
 	if (!this.FindFirst.data.length) return -1;
 	var file=this.FindFirst.data.pop();
-	if (typeof this.curdir[file]=='object' || file=='.' || file=='..') {
+	if (Array.isArray(this.curdir[file]) || file=='.' || file=='..') {
 		searchrec.attributes.set(rec,0x10);
 		searchrec.filesize.set(rec,0);
 	} else {
@@ -410,7 +394,7 @@ filesystem.FSchdir=function(path){
 		temppath=path.substr(1)+'\\';
 		while(1<temppath.length){
 			i=temppath.indexOf('\\');
-			if (typeof newpath[temppath.substr(0,i)]=="object") {
+			if (Array.isArray(newpath[temppath.substr(0,i)])) {
 				newpath=newpath[temppath.substr(0,i)];
 				temppath=temppath.substr(i+1);
 			} else {
@@ -433,7 +417,7 @@ filesystem.FSremove=function(fileName){
 	//int FSremove (const char * fileName);
 	// Check file name
 	fileName=this.checkFileName(this.toString(fileName));
-	if (typeof this.curdir[fileName]=='string') {
+	if (!Array.isArray(this.curdir[fileName])) {
 		delete this.curdir[fileName];
 		return 0;
 	} else {

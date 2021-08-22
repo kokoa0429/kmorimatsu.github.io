@@ -5,7 +5,7 @@
 *********************************/
 
 // Initialize Z80 CPU
-var speed=2000000; // Default: 2 Mhz
+var speed=1000; // Default: 2 Mhz
 var maxspeed=speed;
 z80.setSpeed(speed);
 z80.reset();
@@ -24,7 +24,7 @@ if (get.debug && typeof debugDisplay !="undefined") {
 	}
 }
 if (get.speed) {
-	if (100000<=get.speed && get.speed<=20000000) speed=maxspeed=get.speed;
+	if (1000<=get.speed && get.speed<=20000000) speed=maxspeed=get.speed;
 	z80.setSpeed(speed);
 	dom.showSpeed(speed);
 }
